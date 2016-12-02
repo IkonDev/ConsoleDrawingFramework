@@ -21,9 +21,15 @@
     <ClCompile Include="Ikonsole.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IkonApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ikonsole.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IkonApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <Gdiplus.h>
+#include <mutex>
 
 using namespace Gdiplus;
 
@@ -11,7 +12,8 @@ public:
 	bool Setup(unsigned int Width, unsigned int Height);
 
 	BitmapData GetFrame();
-	void DisplayFrame(BitmapData A_Data);
+	void DisplayFrame();
+	BitmapData& GetData() { return _BitmapData; }
 
 	~Ikonsole();
 
@@ -20,6 +22,7 @@ public:
 
 private:
 	BitmapData _BitmapData;
+	bool AreBitsLocked = false;
 	Bitmap*   _Buffer = nullptr;
 
 	Gdiplus::Graphics* _Graphics = nullptr;
@@ -27,5 +30,7 @@ private:
 
 	HWND               _ConsoleWindow;
 	HDC                _ConsoleDC;
+
+	std::mutex DisplayLock;
 };
 

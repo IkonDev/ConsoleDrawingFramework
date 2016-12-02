@@ -1,4 +1,5 @@
 #include "Ikonsole.h"
+#include <iostream>
 
 
 bool Ikonsole::Setup(unsigned int Width, unsigned int Height)
@@ -21,6 +22,8 @@ bool Ikonsole::Setup(unsigned int Width, unsigned int Height)
 //Returns a bitlocked frame
 BitmapData Ikonsole::GetFrame()
 {
+	DisplayLock.lock();
+
 	//Return backbuffer bitmapdata
 	if (_Buffer != nullptr)
 	{
@@ -28,14 +31,34 @@ BitmapData Ikonsole::GetFrame()
 		_Buffer = nullptr;
 	}
 	_Buffer = new Bitmap(PixelWidth, PixelHeight, PixelFormat32bppARGB);
-	_Buffer->LockBits(&Rect(0, 0, PixelWidth, PixelHeight), ImageLockModeWrite, PixelFormat32bppARGB, &_BitmapData);
+	if (!AreBitsLocked)
+	{
+		_Buffer->LockBits(&Rect(0, 0, PixelWidth, PixelHeight), ImageLockModeWrite, PixelFormat32bppARGB, &_BitmapData);
+		AreBitsLocked = true;
+	}
+
+	DisplayLock.unlock();
+
 	return _BitmapData;
 }
 
-void Ikonsole::DisplayFrame(BitmapData A_Data)
+void Ikonsole::DisplayFrame()
 {
-	_Buffer->UnlockBits(&A_Data);
+	DisplayLock.lock();
+
+	BitmapData _BitData = _BitmapData;
+	if (AreBitsLocked)
+	{
+		_Buffer->UnlockBits(&_BitData);
+		AreBitsLocked = false;
+	}
+	else
+	{
+		std::cout << "BITS ARE NOT LOCKED!";
+	}
 	_Graphics->DrawImage(_Buffer, Rect(0, 0, PixelWidth, PixelHeight));
+
+	DisplayLock.unlock();
 }
 
 Ikonsole::~Ikonsole()
